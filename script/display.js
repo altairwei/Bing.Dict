@@ -9,6 +9,7 @@ var pluginPath;
 var $searchBar, $backBtn, $forwardBtn, $injectBtn;
 
 async function initForWebEngine() {
+	if (!window.WizExplorerApp) return;
 	objApp = window.WizExplorerApp;
 	pluginData = window.WizPluginData;
 	pluginPath = pluginData.path;
@@ -43,6 +44,7 @@ async function initForWebEngine() {
 	})
 }
 
+console.log("Bing.Dict inited");
 initForWebEngine();
 
 // 查询单词
@@ -92,32 +94,31 @@ function check_ifameReady(iframe){
 }
 
 // 裁剪查询页面
-function insertStyle(iframe){
+async function insertStyle(iframe){
 	// 创建样式，隐藏非必要元素
 	var styleElem = document.createElement("style");
 	var objframeDocument = iframe.contentWindow.document;
-	objCommon.LoadTextFromFile(pluginPath + "css/iframe.css", styleText => {
-		styleElem.innerText = styleText;
-		objframeDocument.head.appendChild(styleElem);
-		// 去除多余元素
-		var sidebar = objframeDocument.getElementsByClassName("sidebar")[0];
-		if (sidebar) {sidebar.parentNode.removeChild(sidebar);}
-		var adsblock = objframeDocument.getElementsByClassName("adsblock")[0];
-		if (adsblock) {adsblock.parentNode.removeChild(adsblock);}
-		var dict_banner = objframeDocument.getElementsByClassName("dict_banner")[0];
-		if (dict_banner) {dict_banner.parentNode.removeChild(dict_banner);}
-		// 去除原本body点击事件
-		iframe.contentWindow.addEventListener("click", function(){});
-		objframeDocument.body.onclick = function(){};
-		iframe.contentWindow.addEventListener("dblclick", function(){$searchBar.focus();});
-		// 删除脚本
-		objframeDocument.head.removeChild(objframeDocument.scripts[0]);
-		//
-		iframe.contentWindow.addEventListener("unload", function(){window.frames['bing-dict'].style.display = "none"})
-		// 显示页面
-		iframe.style.display = "block";
-		changeFrameHeight();
-	});
+	const styleText = await objCommon.LoadTextFromFile(pluginPath + "css/iframe.css");
+	styleElem.innerText = styleText;
+	objframeDocument.head.appendChild(styleElem);
+	// 去除多余元素
+	var sidebar = objframeDocument.getElementsByClassName("sidebar")[0];
+	if (sidebar) {sidebar.parentNode.removeChild(sidebar);}
+	var adsblock = objframeDocument.getElementsByClassName("adsblock")[0];
+	if (adsblock) {adsblock.parentNode.removeChild(adsblock);}
+	var dict_banner = objframeDocument.getElementsByClassName("dict_banner")[0];
+	if (dict_banner) {dict_banner.parentNode.removeChild(dict_banner);}
+	// 去除原本body点击事件
+	iframe.contentWindow.addEventListener("click", function(){});
+	objframeDocument.body.onclick = function(){};
+	iframe.contentWindow.addEventListener("dblclick", function(){$searchBar.focus();});
+	// 删除脚本
+	objframeDocument.head.removeChild(objframeDocument.scripts[0]);
+	//
+	iframe.contentWindow.addEventListener("unload", function(){window.frames['bing-dict'].style.display = "none"})
+	// 显示页面
+	iframe.style.display = "block";
+	changeFrameHeight();
 }
 
 function changeFrameHeight(){
