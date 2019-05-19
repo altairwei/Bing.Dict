@@ -8,14 +8,26 @@ var pluginPath;
 // UI 对象
 var $searchBar, $backBtn, $forwardBtn, $injectBtn;
 
+// Initialize WizNote APIs
+new QWebChannel(qt.webChannelTransport, function (channel) {
+	var objectNames = ["WizExplorerApp", "JSPluginSpec", "JSPluginModuleSpec"];
+	for (var i = 0; i < objectNames.length; i++) {
+		var key = objectNames[i];
+		window[key] = channel.objects[key];
+	}
+	console.log("web channel opened");
+	//
+	initForWebEngine();
+
+});
+
 async function initForWebEngine() {
 	if (!window.WizExplorerApp) return;
 	objApp = window.WizExplorerApp;
-	pluginData = window.WizPluginData;
+	pluginData = window.JSPluginSpec;
 	pluginPath = pluginData.path;
 	objWindow = objApp.Window;
 	objCommon = objApp.CommonUI;
-	browserObject = objWindow.CurrentDocumentBrowserObject;
 	window.onresize = function(){
 		changeFrameHeight();  
 	} 
@@ -43,9 +55,6 @@ async function initForWebEngine() {
 		});
 	})
 }
-
-console.log("Bing.Dict inited");
-initForWebEngine();
 
 // 查询单词
 function submitQuery(){
