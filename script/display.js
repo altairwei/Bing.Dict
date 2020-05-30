@@ -10,7 +10,7 @@ var $searchBar, $backBtn, $forwardBtn, $injectBtn;
 
 // Initialize WizNote APIs
 new QWebChannel(qt.webChannelTransport, function (channel) {
-	var objectNames = ["WizExplorerApp", "JSPluginSpec", "JSPluginModuleSpec"];
+	var objectNames = ["WizExplorerApp", "JSPlugin", "JSPluginModule"];
 	for (var i = 0; i < objectNames.length; i++) {
 		var key = objectNames[i];
 		window[key] = channel.objects[key];
@@ -24,8 +24,8 @@ new QWebChannel(qt.webChannelTransport, function (channel) {
 async function initForWebEngine() {
 	if (!window.WizExplorerApp) return;
 	objApp = window.WizExplorerApp;
-	pluginData = window.JSPluginSpec;
-	pluginPath = pluginData.path;
+	objPlugin = window.JSPlugin;
+	pluginPath = objPlugin.PluginPath;
 	objWindow = objApp.Window;
 	objCommon = objApp.CommonUI;
 	window.onresize = function(){
